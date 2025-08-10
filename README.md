@@ -157,9 +157,9 @@ helm upgrade --install backend-release ./charts --namespace default --create-nam
 
 ## 📦 CI/CD with GitHub Actions
 
-Every push to main triggers:
-	1.	Build & push Docker image to ECR
-	2.	Update Helm values with latest image
+Every push to main triggers:  
+	1.	Build & push Docker image to ECR  
+	2.	Update Helm values with latest image  
 	3.	Deploy to EKS
 
  
