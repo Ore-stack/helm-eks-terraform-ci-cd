@@ -29,7 +29,7 @@ A fully automated **cloud-native CI/CD pipeline** that provisions infrastructure
 ## 📂 Project Structure
 
 ```bash
-cloud-native-eks-pipeline/
+helm-eks-terraform-ci-cd/
 ├── backend/                 # Node.js Express app
 │   ├── server.js
 │   ├── package.json
