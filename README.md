@@ -29,22 +29,22 @@ A fully automated **cloud-native CI/CD pipeline** that provisions infrastructure
 ## 📂 Project Structure
 
 cloud-native-eks-pipeline/
-│── backend/                 # Node.js Express app
+├── backend/                 # Node.js Express app
 │   ├── server.js
 │   ├── package.json
-│   ├── Dockerfile
-│── charts/                   # Helm charts
+│   └── Dockerfile
+├── charts/                  # Helm charts
 │   ├── Chart.yaml
 │   ├── values.yaml
 │   ├── deployment.yaml
-│   ├── service.yaml
-│── terraform/                # Terraform IaC
+│   └── service.yaml
+├── terraform/               # Terraform IaC
 │   ├── main.tf
 │   ├── variables.tf
-│   ├── outputs.tf
-│── .github/
+│   └── outputs.tf
+├── .github/
 │   └── workflows/
-│       └── deploy.yml        # GitHub Actions CI/CD pipeline
+│       └── deploy.yml       # GitHub Actions CI/CD pipeline
 └── README.md
 
 ---
@@ -160,10 +160,10 @@ Every push to main triggers:
 
 ### 📈 Real-World Benefits
 
-✅ Speed – Code to production in minutes
-✅ Reliability – Infrastructure & app states managed as code
-✅ Scalability – Kubernetes handles growth automatically
-✅ Security – IAM-based role & secrets management
+✅ Speed – Code to production in minutes  
+✅ Reliability – Infrastructure & app states managed as code  
+✅ Scalability – Kubernetes handles growth automatically  
+✅ Security – IAM-based role & secrets management  
 
 ⸻
 
