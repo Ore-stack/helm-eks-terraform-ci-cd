@@ -47,6 +47,7 @@ cloud-native-eks-pipeline/
 │   └── workflows/
 │       └── deploy.yml       # GitHub Actions CI/CD pipeline
 └── README.md
+```
 
 ---
 
