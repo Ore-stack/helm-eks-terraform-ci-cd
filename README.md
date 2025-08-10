@@ -93,11 +93,14 @@ cd cloud-native-eks-pipeline/backend
 ```
 
 # Install dependencies
+```
 npm install
+```
 
 # Run locally
+```bash
 npm start
-
+```
 
 ⸻
 
