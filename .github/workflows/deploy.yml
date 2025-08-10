@@ -1,0 +1,107 @@
+name: Deploy Express.js App to EKS with Security Scans
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # 2. Set up Node.js
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      # 3. Install dependencies (if package.json exists)
+      - name: Install dependencies
+        run: |
+          if [ -f backend/package.json ]; then
+            cd backend && npm ci
+          fi
+
+      # 4. Lint JavaScript (security + style)
+      - name: Run ESLint
+        run: |
+          if [ -f backend/package.json ]; then
+            cd backend
+            npx eslint . || true
+          fi
+
+      # 5. Audit npm dependencies for vulnerabilities
+      - name: NPM Audit
+        run: |
+          if [ -f backend/package.json ]; then
+            cd backend
+            npm audit --audit-level=high
+          fi
+
+      # 6. CodeQL security analysis
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v2
+        with:
+          languages: javascript
+
+      - name: Perform CodeQL Analysis
+        uses: github/codeql-action/analyze@v2
+
+      # 7. Configure AWS credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      # 8. Login to Amazon ECR
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # 9. Set IMAGE_TAG
+      - name: Set IMAGE_TAG
+        run: echo "IMAGE_TAG=${{ secrets.ECR_REGISTRY }}:latest" >> $GITHUB_ENV
+
+      # 10. Build Docker image
+      - name: Build Docker image
+        run: docker build -t $IMAGE_TAG ./backend
+
+      # 11. Scan Docker image for vulnerabilities
+      - name: Scan Docker image with Trivy
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: $IMAGE_TAG
+          format: table
+          exit-code: 1
+
+      # 12. Push Docker image to ECR
+      - name: Push Docker image to ECR
+        run: docker push $IMAGE_TAG
+
+      # 13. Configure kubectl for EKS
+      - name: Configure kubectl for EKS
+        run: |
+          aws eks update-kubeconfig \
+            --region ${{ secrets.AWS_REGION }} \
+            --name ${{ secrets.EKS_CLUSTER_NAME }}
+
+      # 14. Update image in Helm chart
+      - name: Update Helm chart image
+        run: sed -i "s|REPLACE_IMAGE|$IMAGE_TAG|g" backend/charts/values.yaml
+
+      # 15. Install Helm
+      - name: Install Helm
+        uses: azure/setup-helm@v3
+
+      # 16. Deploy to EKS with Helm
+      - name: Deploy with Helm
+        run: |
+          helm upgrade --install backend-release backend/charts/ \
+            --namespace default \
+            --create-namespace

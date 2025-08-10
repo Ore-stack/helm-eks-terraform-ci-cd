@@ -1,0 +1,10 @@
+# Number of pod replicas to run
+replicaCount: 2  # Run 2 instances of the backend application for redundancy and load balancing
+
+image:
+  # Docker image repository in AWS ECR
+  repository: 364042451378.dkr.ecr.us-east-1.amazonaws.com/backend
+  # Docker image tag to deploy
+  tag: latest
+  # Image pull policy controls when Kubernetes pulls the image:
+  # - IfNotPresent: use local image if available
