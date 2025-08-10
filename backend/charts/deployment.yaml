@@ -1,20 +1,30 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: apps/v1   # API version for Deployment resource; apps/v1 is the stable version for Deployments
+kind: Deployment      # Defines this resource as a Deployment, which manages replica sets and pods
+
 metadata:
-  name: {{ .Chart.Name }}
+  name: {{ .Chart.Name }}  # Name of the Deployment, dynamically set to the Helm chart's name
+
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: {{ .Values.replicaCount }}  # Number of pod replicas to run, set via Helm chart values
+
   selector:
     matchLabels:
-      app: {{ .Chart.Name }}
+      app: {{ .Chart.Name }}  # Selects pods with this label; should match template metadata labels
+
   template:
     metadata:
       labels:
-        app: {{ .Chart.Name }}
+        app: {{ .Chart.Name }}  # Labels assigned to the pods created by this Deployment; used for selection
+
     spec:
       containers:
-        - name: {{ .Chart.Name }}
-          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
-          imagePullPolicy: {{ .Values.image.pullPolicy }}
+        - name: {{ .Chart.Name }}  # Container name, typically same as the app/chart name
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"  
+          # Container image to deploy; repository and tag are dynamically set from Helm values
+          
+          imagePullPolicy: {{ .Values.image.pullPolicy }}  
+          # Defines when Kubernetes pulls the image (e.g., Always, IfNotPresent, Never)
+
           ports:
-            - containerPort: {{ .Values.containerPort }}
+            - containerPort: {{ .Values.containerPort }}  
+            # Exposes this port from the container to the pod network

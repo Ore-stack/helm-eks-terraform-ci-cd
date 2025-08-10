@@ -60,19 +60,41 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      # 8. Login to Amazon ECR
+      # 8. Setup Terraform
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v2
+        with:
+          terraform_version: 1.5.0
+
+      # 9. Terraform Init
+      - name: Terraform Init
+        run: terraform init terraform
+
+      # 10. Terraform Validate
+      - name: Terraform Validate
+        run: terraform validate terraform
+
+      # 11. Terraform Plan
+      - name: Terraform Plan
+        run: terraform plan terraform
+
+      # 12. Terraform Apply
+      - name: Terraform Apply
+        run: terraform apply -auto-approve terraform
+
+      # 13. Login to Amazon ECR
       - name: Login to Amazon ECR
         uses: aws-actions/amazon-ecr-login@v1
 
-      # 9. Set IMAGE_TAG
+      # 14. Set IMAGE_TAG
       - name: Set IMAGE_TAG
         run: echo "IMAGE_TAG=${{ secrets.ECR_REGISTRY }}:latest" >> $GITHUB_ENV
 
-      # 10. Build Docker image
+      # 15. Build Docker image
       - name: Build Docker image
         run: docker build -t $IMAGE_TAG ./backend
 
-      # 11. Scan Docker image for vulnerabilities
+      # 16. Scan Docker image for vulnerabilities
       - name: Scan Docker image with Trivy
         uses: aquasecurity/trivy-action@master
         with:
@@ -80,26 +102,26 @@ jobs:
           format: table
           exit-code: 1
 
-      # 12. Push Docker image to ECR
+      # 17. Push Docker image to ECR
       - name: Push Docker image to ECR
         run: docker push $IMAGE_TAG
 
-      # 13. Configure kubectl for EKS
+      # 18. Configure kubectl for EKS
       - name: Configure kubectl for EKS
         run: |
           aws eks update-kubeconfig \
             --region ${{ secrets.AWS_REGION }} \
             --name ${{ secrets.EKS_CLUSTER_NAME }}
 
-      # 14. Update image in Helm chart
+      # 19. Update image in Helm chart
       - name: Update Helm chart image
         run: sed -i "s|REPLACE_IMAGE|$IMAGE_TAG|g" backend/charts/values.yaml
 
-      # 15. Install Helm
+      # 20. Install Helm
       - name: Install Helm
         uses: azure/setup-helm@v3
 
-      # 16. Deploy to EKS with Helm
+      # 21. Deploy to EKS with Helm
       - name: Deploy with Helm
         run: |
           helm upgrade --install backend-release backend/charts/ \
