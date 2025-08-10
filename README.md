@@ -41,6 +41,10 @@ cloud-native-eks-pipeline/
 │   └── service.yaml
 ├── terraform/               # Terraform IaC
 │   ├── main.tf
+    ├── ecr.tf
+    ├── eks.tf
+    ├── iam.tf
+    ├── vpc.tf
 │   ├── variables.tf
 │   └── outputs.tf
 ├── .github/
@@ -81,8 +85,9 @@ cloud-native-eks-pipeline/
 ---
 
 ## 🖥️ Local Development
+
+## Clone repo
 ```bash
-# Clone repo
 git clone https://github.com/Ore-stack/helm-eks-terraform-ci-cd.git
 cd cloud-native-eks-pipeline/backend
 ```
