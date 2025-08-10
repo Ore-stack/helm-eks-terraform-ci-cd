@@ -89,7 +89,7 @@ helm-eks-terraform-ci-cd/
 ## Clone repo
 ```bash
 git clone https://github.com/Ore-stack/helm-eks-terraform-ci-cd.git
-cd cloud-native-eks-pipeline/backend
+cd helm-eks-terraform-ci-cd/backend
 ```
 
 # Install dependencies
